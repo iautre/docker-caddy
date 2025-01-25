@@ -28,6 +28,7 @@ RUN set -eux; \
     git checkout ${CADDY_VERSION}; \
     ## -ldflags "-s -w"进新压缩
     go build -ldflags "-s -w" -o caddy_temp; \
+    file caddy_temp; \
     ## 借助第三方工具再压缩压缩级别为-1-9
     upx -9 caddy_temp -o /usr/bin/caddy; \
     # && cp server_temp server \
