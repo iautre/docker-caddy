@@ -1,6 +1,7 @@
 FROM golang:1.23.5-alpine3.20 as go-builder
 
 RUN apk add --no-cache \
+    upx \
     git \
 	ca-certificates \
 	libcap \
