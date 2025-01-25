@@ -23,7 +23,7 @@ RUN set -eux; \
     wget -O /tmp/caddy-${CADDY_VERSION}.tar.gz https://github.com/caddyserver/caddy/archive/refs/tags/${CADDY_VERSION}.tar.gz; \
     echo "Downloaded file: $(ls -l /tmp/caddy-${CADDY_VERSION}.tar.gz)"; \
     tar x -z -f /tmp/caddy-${CADDY_VERSION}.tar.gz -C /tmp; \
-    echo "Extracted files: $(ls -l /tmp" ; \
+    echo "Extracted files: $(ls -l /tmp)" ; \
     cd /tmp; \
     ## -ldflags "-s -w"进新压缩
     go build -ldflags "-s -w" -o caddy_temp; \
