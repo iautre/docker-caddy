@@ -21,19 +21,27 @@ RUN set -eux; \
 # https://github.com/caddyserver/caddy/releases
 ENV CADDY_VERSION v2.9.1
 
-WORKDIR /tmp/caddy
+
 
 RUN set -eux; \
+    go env -w GO111MODULE=on; \
+    go env -w CGO_ENABLED=0; \
+    go env -w GOOS=linux;
+    
+WORKDIR /tmp/caddy
+RUN set -eux; \
     git clone https://github.com/caddyserver/caddy.git .;\
-    git checkout ${CADDY_VERSION}; \
+    git checkout ${CADDY_VERSION};
+
+RUN set -eux; \
     go clean; \
     ## -ldflags "-s -w"进新压缩
-    go build -ldflags "-s -w" -o /usr/bin/caddy; \
-    # ls -l caddy_temp; \
-    # chmod +x caddy_temp; \
-    # file caddy_temp; \
-    # ## 借助第三方工具再压缩压缩级别为-1-9
-    # upx -9 caddy_temp -o /usr/bin/caddy; \
+    go build -ldflags "-s -w" -o caddy_temp; \
+    ls -l caddy_temp; \
+    chmod +x caddy_temp; \
+    file caddy_temp; \
+    ## 借助第三方工具再压缩压缩级别为-1-9
+    upx -9 caddy_temp -o /usr/bin/caddy; \
     # && cp server_temp server \
     setcap cap_net_bind_service=+ep /usr/bin/caddy; \
     chmod +x /usr/bin/caddy; \
