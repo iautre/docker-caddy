@@ -2,7 +2,7 @@ FROM golang:1.23.5-alpine3.20 as go-builder
 
 RUN apk add --no-cache \
     upx \
-    git file libcap2-bin \
+    git file \
 	ca-certificates \
 	libcap \
 	mailcap \
@@ -28,12 +28,12 @@ RUN set -eux; \
     git checkout ${CADDY_VERSION}; \
     go clean; \
     ## -ldflags "-s -w"进新压缩
-    go build -ldflags "-s -w" -o caddy_temp; \
-    ls -l caddy_temp; \
-    chmod +x caddy_temp; \
-    file caddy_temp; \
-    ## 借助第三方工具再压缩压缩级别为-1-9
-    upx -9 caddy_temp -o /usr/bin/caddy; \
+    go build -ldflags "-s -w" -o /usr/bin/caddy; \
+    # ls -l caddy_temp; \
+    # chmod +x caddy_temp; \
+    # file caddy_temp; \
+    # ## 借助第三方工具再压缩压缩级别为-1-9
+    # upx -9 caddy_temp -o /usr/bin/caddy; \
     # && cp server_temp server \
     setcap cap_net_bind_service=+ep /usr/bin/caddy; \
     chmod +x /usr/bin/caddy; \
