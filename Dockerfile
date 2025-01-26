@@ -28,7 +28,7 @@ RUN set -eux; \
     go env -w GOOS=linux; \
     git clone https://github.com/caddyserver/caddy.git .;\
     git checkout ${CADDY_VERSION}; \
-    go clean; \
+    cd cmd/caddy; \
     ## -ldflags "-s -w"进新压缩
     go build; \
     ls -la; \
@@ -49,7 +49,7 @@ ENV GIN_MODE=release
 COPY --from=go-builder /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 # COPY --from=go-builder /etc/caddy/Caddyfile /etc/caddy/Caddyfile
 # COPY --from=go-builder /usr/share/caddy/index.html /usr/share/caddy/index.html
-COPY --from=go-builder /tmp/caddy/caddy /usr/bin/caddy
+COPY --from=go-builder /tmp/caddy/cmd/caddy/caddy /usr/bin/caddy
 
 # See https://caddyserver.com/docs/conventions#file-locations for details
 ENV XDG_CONFIG_HOME /config
