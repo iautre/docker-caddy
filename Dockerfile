@@ -30,16 +30,16 @@ RUN set -eux; \
     git checkout ${CADDY_VERSION}; \
     go clean; \
     ## -ldflags "-s -w"进新压缩
-    go build -o caddy_temp; \
-    ls -l caddy_temp; \
+    go build; \
+    ls -la; \
     # chmod +x caddy_temp; \
-    file caddy_temp; \
-    ## 借助第三方工具再压缩压缩级别为-1-9
-    # upx -9 caddy_temp -o /usr/bin/caddy; \
-    cp caddy_temp /usr/bin/caddy;\
-    setcap cap_net_bind_service=+ep /usr/bin/caddy; \
-    chmod +x /usr/bin/caddy; \
-	caddy version
+    # file caddy_temp; \
+    # ## 借助第三方工具再压缩压缩级别为-1-9
+    # # upx -9 caddy_temp -o /usr/bin/caddy; \
+    # cp caddy_temp /usr/bin/caddy;\
+    # setcap cap_net_bind_service=+ep /usr/bin/caddy; \
+    # chmod +x /usr/bin/caddy; \
+	./caddy version
 
 FROM scratch as production
 
@@ -49,7 +49,7 @@ ENV GIN_MODE=release
 COPY --from=go-builder /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 # COPY --from=go-builder /etc/caddy/Caddyfile /etc/caddy/Caddyfile
 # COPY --from=go-builder /usr/share/caddy/index.html /usr/share/caddy/index.html
-COPY --from=go-builder /usr/bin/caddy /usr/bin/caddy
+COPY --from=go-builder /tmp/caddy/caddy /usr/bin/caddy
 
 # See https://caddyserver.com/docs/conventions#file-locations for details
 ENV XDG_CONFIG_HOME /config
