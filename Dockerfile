@@ -2,7 +2,7 @@ FROM golang:1.23.5-alpine3.20 as go-builder
 
 RUN apk add --no-cache \
     upx \
-    git file \
+    git \
 	ca-certificates \
 	libcap \
 	mailcap \
@@ -14,26 +14,28 @@ RUN set -eux; \
 		/data/caddy \
 		/etc/caddy \
 		/usr/share/caddy \
-	; 
-	# wget -O /etc/caddy/Caddyfile "https://github.com/caddyserver/dist/raw/33ae08ff08d168572df2956ed14fbc4949880d94/config/Caddyfile"; \
-	# wget -O /usr/share/caddy/index.html "https://github.com/caddyserver/dist/raw/33ae08ff08d168572df2956ed14fbc4949880d94/welcome/index.html"
+	; \
+	wget -O /etc/caddy/Caddyfile "https://github.com/caddyserver/dist/raw/33ae08ff08d168572df2956ed14fbc4949880d94/config/Caddyfile"; \
+	wget -O /usr/share/caddy/index.html "https://github.com/caddyserver/dist/raw/33ae08ff08d168572df2956ed14fbc4949880d94/welcome/index.html"
 
 # https://github.com/caddyserver/caddy/releases
 ENV CADDY_VERSION v2.9.1
 
-WORKDIR /tmp/caddy
-
 RUN set -eux; \
     go env -w GO111MODULE=on; \
     go env -w CGO_ENABLED=0; \
-    go env -w GOOS=linux; \
+    go env -w GOOS=linux;
+
+WORKDIR /tmp/caddy
+
+RUN set -eux; \
     git clone https://github.com/caddyserver/caddy.git .;\
     git checkout ${CADDY_VERSION}; \
     cd cmd/caddy; \
     ## -ldflags "-s -w"进新压缩
     go build -ldflags "-s -w" -o caddy_temp; \
     # chmod +x caddy_temp; \
-    file caddy_temp; \
+    # file caddy_temp; \
     # ## 借助第三方工具再压缩压缩级别为-1-9
     upx -9 caddy_temp -o /usr/bin/caddy; \
     # cp caddy_temp /usr/bin/caddy;\
@@ -47,8 +49,8 @@ ENV GO_ENV=prod
 ENV GIN_MODE=release
     
 COPY --from=go-builder /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
-# COPY --from=go-builder /etc/caddy/Caddyfile /etc/caddy/Caddyfile
-# COPY --from=go-builder /usr/share/caddy/index.html /usr/share/caddy/index.html
+COPY --from=go-builder /etc/caddy/Caddyfile /etc/caddy/Caddyfile
+COPY --from=go-builder /usr/share/caddy/index.html /usr/share/caddy/index.html
 COPY --from=go-builder /usr/bin/caddy /caddy
 
 # See https://caddyserver.com/docs/conventions#file-locations for details
