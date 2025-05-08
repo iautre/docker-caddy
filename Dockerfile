@@ -1,4 +1,4 @@
-FROM golang:1.23.5-alpine3.20 as go-builder
+FROM golang:1.24.1-alpine3.20 as go-builder
 
 RUN apk add --no-cache \
     upx \
@@ -19,7 +19,7 @@ RUN set -eux; \
 	wget -O /usr/share/caddy/index.html "https://github.com/caddyserver/dist/raw/33ae08ff08d168572df2956ed14fbc4949880d94/welcome/index.html"
 
 # https://github.com/caddyserver/caddy/releases
-ENV CADDY_VERSION v2.9.1
+ENV CADDY_VERSION v2.10.0
 
 RUN set -eux; \
     go env -w GO111MODULE=on; \
@@ -57,7 +57,7 @@ COPY --from=go-builder /usr/bin/caddy /caddy
 ENV XDG_CONFIG_HOME /config
 ENV XDG_DATA_HOME /data
 
-LABEL org.opencontainers.image.version=v2.9.1
+LABEL org.opencontainers.image.version=v2.10.0
 LABEL org.opencontainers.image.title=Caddy
 LABEL org.opencontainers.image.description="a powerful, enterprise-ready, open source web server with automatic HTTPS written in Go"
 LABEL org.opencontainers.image.url=https://caddyserver.com
@@ -69,6 +69,9 @@ LABEL org.opencontainers.image.source="https://github.com/caddyserver/caddy-dock
 EXPOSE 80
 EXPOSE 443
 EXPOSE 443/udp
+
+VOLUME ["/srv", "/var/www"]
+
 
 WORKDIR /srv
 
